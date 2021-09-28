@@ -27,8 +27,9 @@ class Customer:
     
     # Submit_order takes a cashier, a stall and an amount as parameters, 
     # it deducts the amount from the customer’s wallet and calls the receive_payment method on the cashier object
-    def submit_order(self, cashier, stall, amount): 
-        pass
+    def submit_order(self, cashier, stall, amount):
+        self.wallet -= amount
+        cashier.receive_payment(stall, amount)
 
     # The __str__ method prints the customer's information.    
     def __str__(self):
@@ -72,8 +73,37 @@ class Cashier:
 ## Complete the Stall class here following the instructions in HW_4_instructions_rubric
 class Stall:
     
-    pass
+    # Constructor 
+    def __init__(self, name, inventory, cost = 7, earnings = 0):
+        self.name = name
+        self.inventory = inventory
+        self.cost = cost
+        self.earnings = earnings
 
+    # If the stall has enough food, it will decrease the quantity of that food in the inventory.
+    def process_order(self, name, quantity):
+        if self.inventory[name] > quantity:
+            self.inventory[name] -= quantity
+            self.earnings += quantity * self.cost
+
+    # Returns True if there is enough food left in the inventory and False otherwise.
+    def has_item(self, name, quantity):
+        return (self.inventory[name] > quantity)
+ 
+    # It will add the quantity to the existing quantity if the item exists in the inventory dictionary 
+    # or create a new item in the inventory dictionary with the item name as the key and the quantity as the value.
+    def stock_up(self, name, quantity):
+        if name not in self.inventory:
+            self.inventory[name] = 0
+        self.inventory[name] += quantity
+    
+    # Returns the total for an order.
+    def compute_cost(self, quantity):
+        return quantity * self.cost
+
+    # String function
+    def __str__(self):
+        return f"Hello, we are {self.name}. This is the current menu {', '.join([item for item in self.inventory.keys()])}. We charge ${self.cost} per item. We have ${self.earnings} in total."
 
 class TestAllMethods(unittest.TestCase):
     
@@ -179,6 +209,12 @@ class TestAllMethods(unittest.TestCase):
 ### Write main function
 def main():
     #Create different objects 
+    i1 = {'hamburger': 10, 'hot dog': 20, 'soda': 50}
+    i2 = {'pizza': 15, 'pasta': 30, 'water': 100}
+
+    c1 = Customer("Michael", 200)
+    c2 = Customer("Tom", 50)
+    c3 = Customer("George", 75)
 
     #Try all cases in the validate_order function
     #Below you need to have *each customer instance* try the four cases
